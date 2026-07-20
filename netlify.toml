@@ -1,0 +1,10 @@
+# Netlify Configuration File
+[build]
+  # กำหนดโฟลเดอร์หน้าเว็บตั้งต้นสำหรับการแสดงผล (Publish directory)
+  publish = "pagefront"
+
+# Redirect rules เพื่อให้เปิดหน้าเว็บและไฟล์ย่อยได้โดยไม่ติด 404
+[[redirects]]
+  from = "/*"
+  to = "/:splat"
+  status = 200
