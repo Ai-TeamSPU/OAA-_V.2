@@ -1,2 +1,15 @@
-โค้ดที่ไม่ใช้/.md
-โค้ดที่ไม่ใช้/PDPA.md
+# Dependencies
+node_modules/
+
+# Environment variables (มี API Key ห้ามอัปขึ้น Git)
+.env
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# โค้ดเก่าที่ไม่ใช้แล้ว
+โค้ดที่ไม่ใช้/

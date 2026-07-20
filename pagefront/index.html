@@ -83,7 +83,6 @@
     }
 
     @keyframes pulse {
-
       0%,
       100% {
         transform: scale(1);
@@ -134,20 +133,20 @@
     integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y"
     crossorigin="anonymous"></script>
 
+  <!-- Data Constants -->
+  <script src="data.js"></script>
   <!-- Components -->
   <script type="text/babel" src="components.jsx"></script>
-  <!-- App (data + logic combined) -->
+  <!-- Main Frontend React (Separated from Backend) -->
   <script type="text/babel" src="app.jsx"></script>
 
   <!-- Progress Bar Logic -->
   <script>
-    // Progress bar: fast at start, slow toward end
     var pct = 0;
     var bar = document.getElementById('bar-fill');
     var pctLabel = document.getElementById('bar-pct');
 
     function easeProgress(current) {
-      // Fast first 70%, then slow down
       if (current < 70) return current + (Math.random() * 8 + 4);
       if (current < 88) return current + (Math.random() * 2.5 + 1);
       if (current < 96) return current + (Math.random() * 0.8 + 0.2);
@@ -161,7 +160,6 @@
       pctLabel.textContent = Math.floor(pct) + '%';
     }, 120);
 
-    // When React renders, complete the bar and hide loader
     window.__appReady = function () {
       clearInterval(interval);
       bar.style.transition = 'width 0.4s ease-out';
@@ -177,7 +175,6 @@
       }, 350);
     };
 
-    // Fallback: hide after 5s no matter what
     setTimeout(function () {
       if (document.getElementById('loading-screen').style.display !== 'none') {
         window.__appReady && window.__appReady();
@@ -185,9 +182,7 @@
     }, 5000);
   </script>
 
-  <!-- Signal app ready after Babel transpile -->
   <script type="text/babel">
-    // Called after all babel scripts loaded
     setTimeout(() => { window.__appReady && window.__appReady(); }, 200);
   </script>
 

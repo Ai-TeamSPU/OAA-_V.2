@@ -524,35 +524,66 @@
   `;
     }
 
-    function loadAndRender() {
+    async function loadAndRender() {
       const container = document.getElementById('form-data-container');
-      try {
-        const records = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-        if (records.length === 0) {
+      const params = new URLSearchParams(window.location.search);
+      const targetId = params.get("id");
+      const isTemp = params.get("temp");
+
+      if (isTemp) {
+        try {
+          const raw = sessionStorage.getItem("oaa_print_temp_form");
+          if (!raw) throw new Error("ไม่พบข้อมูลฟอร์มชั่วคราว");
+          const tempForm = JSON.parse(raw);
+          container.innerHTML = renderRecord(tempForm);
+          return;
+        } catch (e) {
           container.innerHTML = `
-        <div style="text-align:center;padding:40px;color:#666">
-          <div style="font-size:24px;margin-bottom:12px">📋</div>
-          <div style="font-size:12pt;font-weight:600">ไม่พบข้อมูลที่บันทึกไว้</div>
-          <div style="font-size:10pt;color:#999;margin-top:6px">กรุณากลับไปกรอกแบบฟอร์มและบันทึกข้อมูลก่อน</div>
-        </div>`;
+          <div style="text-align:center;padding:40px;color:#ef4444">
+            <div style="font-size:24px;margin-bottom:12px">✕</div>
+            <div style="font-size:12pt;font-weight:600">เกิดข้อผิดพลาดในการโหลดข้อมูลฟอร์ม</div>
+            <div style="font-size:10pt;margin-top:6px">${e.message}</div>
+          </div>`;
           return;
         }
+      }
 
-        const params = new URLSearchParams(window.location.search);
-        const targetId = params.get("id");
+      if (!targetId) {
+        container.innerHTML = `
+        <div style="text-align:center;padding:40px;color:#666">
+          <div style="font-size:24px;margin-bottom:12px">📋</div>
+          <div style="font-size:12pt;font-weight:600">ไม่พบรหัสประวัติสำหรับการพิมพ์</div>
+          <div style="font-size:10pt;color:#999;margin-top:6px">กรุณาเลือกพิมพ์รายงานจากประวัติอาจารย์พิเศษในหน้าระบบหลัก</div>
+        </div>`;
+        return;
+      }
 
-        let recordToPrint;
-        if (targetId) {
-          recordToPrint = records.find(r => r.id === targetId);
+      try {
+        const settings = JSON.parse(localStorage.getItem("oaa_settings_v3") || "{}");
+        const apiUrl = settings.apiUrl || "http://localhost:3000";
+
+        container.innerHTML = `
+        <div style="text-align:center;padding:40px;color:#666">
+          <div style="font-size:12pt;font-weight:600">⏳ กำลังโหลดข้อมูลประวัติจากคลาวด์...</div>
+        </div>`;
+
+        const res = await fetch(apiUrl + "/api/instructors/" + targetId);
+        if (!res.ok) {
+          throw new Error("เซิร์ฟเวอร์ตอบกลับไม่ถูกต้อง");
+        }
+        const json = await res.json();
+        if (json.status !== "success" || !json.data) {
+          throw new Error(json.message || "ไม่พบประวัติอาจารย์พิเศษรายนี้");
         }
 
-        if (!recordToPrint) {
-          recordToPrint = records[0]; // fallback to latest if id not found
-        }
-
-        container.innerHTML = renderRecord(recordToPrint.data);
+        container.innerHTML = renderRecord(json.data);
       } catch (e) {
-        container.innerHTML = '<p style="color:red">เกิดข้อผิดพลาดในการโหลดข้อมูล</p>';
+        container.innerHTML = `
+        <div style="text-align:center;padding:40px;color:#ef4444">
+          <div style="font-size:24px;margin-bottom:12px">✕</div>
+          <div style="font-size:12pt;font-weight:600">เกิดข้อผิดพลาดในการดึงข้อมูล</div>
+          <div style="font-size:10pt;margin-top:6px">${e.message}</div>
+        </div>`;
       }
     }
 
