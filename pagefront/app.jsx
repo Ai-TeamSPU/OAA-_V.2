@@ -687,7 +687,7 @@ function SettingsModal({ onClose }) {
 }
 
 // ===== Saved Records List =====
-function RecordsList({ records, onLoad, onDelete, onPrint }) {
+function RecordsList({ records, onLoad, onDelete, onPreview, onDownload }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -728,10 +728,11 @@ function RecordsList({ records, onLoad, onDelete, onPrint }) {
                   <div style={{ fontSize: 13, fontWeight: 600, color: "#1e293b" }}>{rec.data.titlePrefix} {rec.data.firstNameTH} {rec.data.lastNameTH}</div>
                   <div style={{ fontSize: 11, color: "#6b7280" }}>{rec.data.faculty} · {rec.data.semester} · {new Date(rec.savedAt).toLocaleDateString("th-TH")}</div>
                 </div>
-                <div style={{ display: "flex", gap: 4 }}>
-                  <button type="button" onClick={() => onPrint(rec.id)} style={{ background: "#f0fdf4", border: "none", borderRadius: 6, padding: "5px 10px", cursor: "pointer", fontSize: 12, color: "#166534", fontWeight: 600, fontFamily: "inherit" }}>พิมพ์</button>
-                  <button type="button" onClick={() => onLoad(rec)} style={{ background: "#eff6ff", border: "none", borderRadius: 6, padding: "5px 10px", cursor: "pointer", fontSize: 12, color: "#1a56db", fontWeight: 600, fontFamily: "inherit" }}>โหลด</button>
-                  <button type="button" onClick={() => onDelete(rec.id)} style={{ background: "#fff1f2", border: "none", borderRadius: 6, padding: "5px 10px", cursor: "pointer", fontSize: 12, color: "#ef4444", fontWeight: 600, fontFamily: "inherit" }}>ลบ</button>
+                <div style={{ display: "flex", gap: 6 }}>
+                  <button type="button" onClick={() => onPreview(rec.id)} style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 6, padding: "5px 10px", cursor: "pointer", fontSize: 12, color: "#1d4ed8", fontWeight: 600, fontFamily: "inherit" }}>👁️ แสดงตัวอย่าง</button>
+                  <button type="button" onClick={() => onDownload(rec.id)} style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 6, padding: "5px 10px", cursor: "pointer", fontSize: 12, color: "#15803d", fontWeight: 600, fontFamily: "inherit" }}>📥 ดาวน์โหลด</button>
+                  <button type="button" onClick={() => onLoad(rec)} style={{ background: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: 6, padding: "5px 10px", cursor: "pointer", fontSize: 12, color: "#475569", fontWeight: 600, fontFamily: "inherit" }}>✏️ โหลดฟอร์ม</button>
+                  <button type="button" onClick={() => onDelete(rec.id)} style={{ background: "#fff1f2", border: "1px solid #fecdd3", borderRadius: 6, padding: "5px 10px", cursor: "pointer", fontSize: 12, color: "#b91c1c", fontWeight: 600, fontFamily: "inherit" }}>🗑️ ลบ</button>
                 </div>
               </div>
             )) : (
@@ -1037,7 +1038,7 @@ function App() {
     }
   }
 
-  function handlePrint(id) {
+  function handlePreview(id) {
     if (typeof id === 'number' || (typeof id === 'string' && id)) {
       window.open("index-print.html?id=" + id, "_blank");
     } else if (form.id) {
@@ -1045,6 +1046,17 @@ function App() {
     } else {
       sessionStorage.setItem("oaa_print_temp_form", JSON.stringify(form));
       window.open("index-print.html?temp=1", "_blank");
+    }
+  }
+
+  function handleDownload(id) {
+    if (typeof id === 'number' || (typeof id === 'string' && id)) {
+      window.open("index-print.html?id=" + id + "&autoPrint=1", "_blank");
+    } else if (form.id) {
+      window.open("index-print.html?id=" + form.id + "&autoPrint=1", "_blank");
+    } else {
+      sessionStorage.setItem("oaa_print_temp_form", JSON.stringify(form));
+      window.open("index-print.html?temp=1&autoPrint=1", "_blank");
     }
   }
 
@@ -1092,7 +1104,7 @@ function App() {
 
       {/* Content */}
       <div style={{ maxWidth: 860, margin: "0 auto", padding: "24px 16px 80px" }}>
-        <RecordsList records={records} onLoad={handleLoad} onDelete={handleDelete} onPrint={handlePrint} />
+        <RecordsList records={records} onLoad={handleLoad} onDelete={handleDelete} onPreview={handlePreview} onDownload={handleDownload} />
         <Section1 form={form} set={set} />
         <Section2 form={form} set={set} />
         <Section3 form={form} set={set} />
@@ -1107,9 +1119,13 @@ function App() {
             style={{ background: saving ? "#93c5fd" : "linear-gradient(135deg,#1a56db,#2563eb)", color: "#fff", border: "none", borderRadius: 8, padding: "10px 28px", cursor: saving ? "not-allowed" : "pointer", fontSize: 14, fontWeight: 700, fontFamily: "inherit", boxShadow: "0 2px 8px rgba(26,86,219,0.25)" }}>
             {saving ? "⏳ กำลังบันทึก..." : "💾 บันทึกข้อมูล"}
           </button>
-          <button type="button" onClick={handlePrint}
-            style={{ background: "#fff", color: "#7c3aed", border: "1px solid #c4b5fd", borderRadius: 8, padding: "10px 20px", cursor: "pointer", fontSize: 14, fontWeight: 600, fontFamily: "inherit" }}>
-            🖨️ พิมพ์ / ดาวน์โหลด PDF
+          <button type="button" onClick={() => handlePreview()}
+            style={{ background: "#fff", color: "#1d4ed8", border: "1px solid #93c5fd", borderRadius: 8, padding: "10px 20px", cursor: "pointer", fontSize: 14, fontWeight: 600, fontFamily: "inherit" }}>
+            👁️ แสดงตัวอย่าง
+          </button>
+          <button type="button" onClick={() => handleDownload()}
+            style={{ background: "#fff", color: "#15803d", border: "1px solid #86efac", borderRadius: 8, padding: "10px 20px", cursor: "pointer", fontSize: 14, fontWeight: 600, fontFamily: "inherit" }}>
+            📥 ดาวน์โหลด PDF
           </button>
           <button type="button" onClick={handleClear}
             style={{ background: "#fff", color: "#6b7280", border: "1px solid #d1d5db", borderRadius: 8, padding: "10px 20px", cursor: "pointer", fontSize: 14, fontWeight: 600, fontFamily: "inherit" }}>

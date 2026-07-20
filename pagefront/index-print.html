@@ -536,6 +536,9 @@
           if (!raw) throw new Error("ไม่พบข้อมูลฟอร์มชั่วคราว");
           const tempForm = JSON.parse(raw);
           container.innerHTML = renderRecord(tempForm);
+          if (params.get("autoPrint") === "1" || params.get("download") === "1") {
+            setTimeout(() => window.print(), 500);
+          }
           return;
         } catch (e) {
           container.innerHTML = `
@@ -577,6 +580,9 @@
         }
 
         container.innerHTML = renderRecord(json.data);
+        if (params.get("autoPrint") === "1" || params.get("download") === "1") {
+          setTimeout(() => window.print(), 500);
+        }
       } catch (e) {
         container.innerHTML = `
         <div style="text-align:center;padding:40px;color:#ef4444">
