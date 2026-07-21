@@ -5,10 +5,10 @@ const SETTINGS_KEY = "oaa_settings_v3";
 function loadSettings() {
   try {
     const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
-    if (!saved.apiUrl) saved.apiUrl = "http://localhost:3000";
+    if (!saved.apiUrl) saved.apiUrl = "https://oaa-backend-api.onrender.com";
     return saved;
   } catch (e) {
-    return { apiUrl: "http://localhost:3000" };
+    return { apiUrl: "https://oaa-backend-api.onrender.com" };
   }
 }
 function saveSettings(s) { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }
@@ -41,7 +41,7 @@ const ApiService = {
     const settings = loadSettings();
     return settings.apiUrl || "http://localhost:3000";
   },
-  
+
   getHeaders: () => {
     const token = localStorage.getItem("oaa_admin_token");
     const headers = { "Content-Type": "application/json" };
@@ -648,7 +648,7 @@ function SettingsModal({ onClose }) {
     try {
       const response = await fetch(apiUrl + "/api/instructors/test-connection-ping").catch(e => e);
       setTestResult({ ok: true, msg: "✓ เชื่อมต่อ Backend Server สำเร็จ!" });
-    } catch(e) {
+    } catch (e) {
       setTestResult({ ok: false, msg: "✕ เชื่อมต่อไม่สำเร็จ: " + e.message });
     }
     setTesting(false);
@@ -935,7 +935,7 @@ function App() {
             setIsAdmin(true);
             showToast("เข้าสู่โหมด Admin แล้ว", "success");
           }
-        } catch(e) {
+        } catch (e) {
           Swal.fire({
             icon: 'error',
             title: 'ผิดพลาด!',

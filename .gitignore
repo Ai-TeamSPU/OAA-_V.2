@@ -13,3 +13,6 @@ Thumbs.db
 
 # โค้ดเก่าที่ไม่ใช้แล้ว
 โค้ดที่ไม่ใช้/
+Docs/authentication_design_advice.md
+Docs/render_setup_steps.md
+Docs/vercel_deployment_guide.md
