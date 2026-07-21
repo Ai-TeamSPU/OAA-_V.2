@@ -30,15 +30,19 @@ app.use(helmet({
   contentSecurityPolicy: false  // ปิดเพราะ Frontend ใช้ CDN
 }));
 
-// CORS — จำกัด Origin ที่อนุญาต
+// CORS — อนุญาต Localhost, Vercel (*.vercel.app), Netlify (*.netlify.app) และ ALLOWED_ORIGINS
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
     if (ALLOWED_ORIGINS.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS: Origin not allowed → ' + origin));
+      return callback(null, true);
     }
+    // อนุญาตโดเมน Vercel, Netlify และ Localhost ทั้งหมดโดยอัตโนมัติ
+    if (/\.vercel\.app$/.test(origin) || /\.netlify\.app$/.test(origin) || /^http:\/\/localhost/.test(origin) || /^http:\/\/127\.0\.0\.1/.test(origin)) {
+      return callback(null, true);
+    }
+    console.warn(`[CORS Warning] Blocked origin: ${origin}`);
+    return callback(null, false);
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
